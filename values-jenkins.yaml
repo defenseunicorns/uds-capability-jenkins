@@ -131,4 +131,4 @@ monitoring:
   enabled: false
 
 networkPolicies:
-  enabled: true
+  enabled: false
