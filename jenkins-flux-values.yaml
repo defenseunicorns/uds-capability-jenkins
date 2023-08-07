@@ -1,0 +1,13 @@
+application:
+  name: jenkins
+  createNamespace: ###ZARF_VAR_JENKINS_CREATE_NAMESPACE###
+  namespace: jenkins
+  path: chart
+  repository: https://repo1.dso.mil/big-bang/product/community/jenkins.git
+  ref:
+    # renovate: datasource=gitlab-tags depName=big-bang/product/community/jenkins versioning=loose registryUrl=https://repo1.dso.mil
+    tag: 4.3.9-bb.0
+  values: |
+    ###ZARF_VAR_JENKINS_VALUES###
+  dependsOn:
+    ###ZARF_VAR_JENKINS_DEPENDS_ON###
