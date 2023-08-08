@@ -35,3 +35,20 @@ set -o history
 # This will destroy and create a compatible k3d cluster then it will run make build/all and make deploy/all. Follow the breadcrumbs in the Makefile to see what and how its doing it.
 make cluster/full
 ```
+
+## Import Zarf Skeleton
+Below is an example of how to import this projects zarf skeleton into your zarf.yaml. The [uds-package-sofware-factory](https://github.com/defenseunicorns/uds-package-software-factory.git) does this with a subset of the uds-capability projects.
+
+```yaml
+components:
+  - name: values
+    required: true
+    files:
+      - source: <path-to-the-values-you-want-to-use>
+        target: values-jenkins.yaml
+  - name: jenkins
+    required: true
+    import:
+      name: jenkins
+      url: oci://ghcr.io/defenseunicorns/uds-capability/jenkins:0.0.1-skeleton
+```
