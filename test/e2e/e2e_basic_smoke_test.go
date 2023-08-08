@@ -27,6 +27,25 @@ func TestAllServicesRunning(t *testing.T) { //nolint:funlen
 		output, err := platform.RunSSHCommandAsSudo(`kubectl get nodes`)
 		require.NoError(t, err, output)
 
-		//TODO add tests
+		// Wait for the jenkins statefulset to exist.
+		output, err = platform.RunSSHCommandAsSudo(`timeout 1200 bash -c "while ! kubectl get statefulset jenkins -n jenkins; do sleep 5; done"`)
+		require.NoError(t, err, output)
+
+		// Wait for the jenkins statefulset to report that it is ready
+		output, err = platform.RunSSHCommandAsSudo(`kubectl rollout status statefulset/jenkins -n jenkins --watch --timeout=1200s`)
+		require.NoError(t, err, output)
+
+		// Ensure that the services do not accept discontinued TLS versions. If they reject TLSv1.1 it is assumed that they also reject anything below TLSv1.1.
+		// Ensure that jenkins does not accept TLSv1.1
+		output, err = platform.RunSSHCommandAsSudo(`sslscan jenkins.bigbang.dev | grep "TLSv1.1" | grep "disabled"`)
+		require.NoError(t, err, output)
+
+		// Setup DNS records for cluster services
+		output, err = platform.RunSSHCommandAsSudo(`cd ~/app && utils/metallb/dns.sh && utils/metallb/hosts-write.sh`)
+		require.NoError(t, err, output)
+
+		// Ensure that jenkins is available outside of the cluster.
+		output, err = platform.RunSSHCommandAsSudo(`timeout 1200 bash -c "while ! curl -L -s --fail --show-error https://jenkins.bigbang.dev/login > /dev/null; do sleep 5; done"`)
+		require.NoError(t, err, output)
 	})
 }
