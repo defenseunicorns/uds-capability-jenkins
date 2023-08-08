@@ -16,12 +16,12 @@ make build/zarf
 # Login to the registry
 set +o history
 
-# registry1.dso.mil (To access registry1 images used during build time in this example)
+# registry1.dso.mil (To access registry1 images needed during build time)
 export REGISTRY1_USERNAME="YOUR-USERNAME-HERE"
 export REGISTRY1_TOKEN="YOUR-TOKEN-HERE"
 echo $REGISTRY1_TOKEN | build/zarf tools registry login registry1.dso.mil --username $REGISTRY1_USERNAME --password-stdin
 
-# ghcr.io (To access oci packages used in this example)
+# ghcr.io (To access oci packages needed)
 export GH_USERNAME="YOUR-USERNAME-HERE"
 export GH_TOKEN="YOUR-TOKEN-HERE"
 echo $GH_TOKEN | build/zarf tools registry login ghcr.io --username $GH_USERNAME --password-stdin
