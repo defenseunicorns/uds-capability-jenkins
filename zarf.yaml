@@ -11,31 +11,25 @@ variables:
     default: "[]"
   - name: JENKINS_CREATE_NAMESPACE
     default: "true"
+  - name: DOMAIN
+    default: "bigbang.dev"
 
 components:
-  - name: jenkins-values
+  - name: istio-version
     required: true
-    files:
-      - source: values-jenkins.yaml
-        target: values-jenkins.yaml
-  - name: jenkins
-    required: true
-    description: "Deploy jenkins via flux"
     actions:
       onDeploy:
         before:
-          - cmd: cat values-jenkins.yaml
-            description: Read jenkins values into variable.
-            mute: true
-            setVariables:
-            - name: JENKINS_VALUES
-              autoIndent: true
-              sensitive: true
+          - cmd: kubectl get deployment -n monitoring monitoring-monitoring-kube-operator -o=jsonpath='{.spec.template.metadata.annotations.bigbang\.dev/istioVersion}'
+            setVariable: ISTIO_VERSION
+  - name: jenkins
+    required: true
+    description: "Deploy jenkins via flux"
     charts:
     # renovate: datasource=helm
       - name: flux-app
         url: https://defenseunicorns.github.io/uds-support-charts/
-        version: 1.0.5
+        version: 1.0.7
         namespace: jenkins
         valuesFiles:
           - jenkins-flux-values.yaml
